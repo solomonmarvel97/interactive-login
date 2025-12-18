@@ -2,7 +2,7 @@
  * Login form component handling user input and focus states.
  * Communicates focus state back to parent for character animation.
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -14,6 +14,16 @@ interface LoginFormProps {
 
 export function LoginForm({ onFocusChange, onLoginStatusChange, theme }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
+
+  // Watch showPassword to control character shy behavior
+  useEffect(() => {
+    // Characters turn away only when password is visible
+    if (showPassword) {
+      onFocusChange('password');
+    } else {
+      onFocusChange('none');
+    }
+  }, [showPassword, onFocusChange]);
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
 
@@ -78,8 +88,8 @@ export function LoginForm({ onFocusChange, onLoginStatusChange, theme }: LoginFo
                 ? 'bg-[#111] border-[#333] text-white placeholder-[#444] hover:border-[#555] focus:border-white focus:ring-white' 
                 : 'bg-white border-[#eaeaea] text-gray-900 placeholder-gray-400 hover:border-[#666] focus:border-black focus:ring-black'
               }`}
-            onFocus={() => onFocusChange('email')}
-            onBlur={() => onFocusChange('none')}
+            onFocus={() => !showPassword && onFocusChange('email')}
+            onBlur={() => !showPassword && onFocusChange('none')}
           />
         </div>
 
@@ -95,8 +105,6 @@ export function LoginForm({ onFocusChange, onLoginStatusChange, theme }: LoginFo
                   ? 'bg-[#111] border-[#333] text-white placeholder-[#444] hover:border-[#555] focus:border-white focus:ring-white' 
                   : 'bg-white border-[#eaeaea] text-gray-900 placeholder-gray-400 hover:border-[#666] focus:border-black focus:ring-black'
                 }`}
-              onFocus={() => onFocusChange('password')}
-              onBlur={() => onFocusChange('none')}
             />
             <button
               type="button"
